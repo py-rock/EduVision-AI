@@ -303,7 +303,7 @@ if "force_login" not in st.session_state:
 if "show_profile" not in st.session_state:
     st.session_state.show_profile = False
 
-LIMIT_REACHED = (not st.session_state.logged_in) and (st.session_state.guest_chat_count >= 5)
+LIMIT_REACHED = False # Chat limit removed as per user request
 
 if LIMIT_REACHED or st.session_state.force_login:
     # Render the new premium Auth UI
@@ -341,11 +341,8 @@ with st.sidebar:
                 st.session_state.show_profile = False
                 st.rerun()
     else:
-        st.info("👤 Guest Mode (Limited)")
-        if st.session_state.guest_chat_count >= 5:
-            st.error(f"Limit Reached: {st.session_state.guest_chat_count}/5")
-        else:
-            st.caption(f"Free Chats: {5 - st.session_state.guest_chat_count} remaining")
+        st.info("👤 Guest Mode")
+        # Chat limit logic removed
         
         if st.button("Login / Signup"):
              # We rely on LIMIT_REACHED logic or manual force
@@ -469,9 +466,7 @@ with main_container:
 
 # --- Chat Input at Bottom ---
 if prompt := st.chat_input("What do you want to learn today?"):
-    # Guest Limit Check
-    if not st.session_state.logged_in and st.session_state.guest_chat_count >= 5:
-        st.rerun() # Will hit the LIMIT_REACHED block above
+    # Guest Limit Check Removed
 
     st.session_state.messages.append({"role": "user", "content": prompt})
     
@@ -518,7 +513,7 @@ if prompt := st.chat_input("What do you want to learn today?"):
                     if st.session_state.logged_in:
                         database.save_chat_history(st.session_state.username, prompt, final_content)
                     else:
-                        st.session_state.guest_chat_count += 1
+                        pass # guest_chat_count increment removed
                         
                     st.rerun()
                         
